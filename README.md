@@ -9,3 +9,6 @@ Script ini menghasilkan file PDF dengan watermark **Loker Kendari Official** di 
 1. Masuk ke folder `file/`:
    ```bash
    cd file
+2 Install dependensi:pip install -r requirements.txt
+3 jalankan script:python generate_pdf.py
+4. File PDF akan muncul di file/pdf/Hasil_Loker_Kendari.pdf
