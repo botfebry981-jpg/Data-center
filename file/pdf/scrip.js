@@ -2,9 +2,8 @@
 const fileNameInput = document.getElementById('pdfFileName');
 const textInput = document.getElementById('jobTextInput');
 const previewDiv = document.getElementById('livePreview');
-const generateBtn = document.getElementById('generateBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 
-// Escape HTML
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, function(m) {
@@ -15,15 +14,14 @@ function escapeHtml(str) {
     });
 }
 
-// Format teks mentah menjadi HTML gaya lowongan
 function formatTextToJobHTML(rawText) {
     if (!rawText.trim()) return '<p><em>Kosong — tulis teks lowongan di kolom kiri</em></p>';
     
     let lines = rawText.split(/\r?\n/);
     let output = "";
+    let inBullet = false;
     let bulletItems = [];
     let currentSectionTitle = "";
-    let inBullet = false;
     let mainTitle = "";
     let subLocation = "";
     
@@ -47,7 +45,9 @@ function formatTextToJobHTML(rawText) {
         if (line.startsWith('-') || line.startsWith('•') || line.startsWith('*')) {
             let cleanItem = line.replace(/^[-•*]\s*/, '');
             if (!inBullet) {
-                if (currentSectionTitle === "") currentSectionTitle = "KETERANGAN";
+                if (currentSectionTitle === "") {
+                    currentSectionTitle = "KETERANGAN";
+                }
                 inBullet = true;
             }
             bulletItems.push(cleanItem);
@@ -57,10 +57,7 @@ function formatTextToJobHTML(rawText) {
                 flushBulletSection();
                 inBullet = false;
             }
-            
-            let isSectionTitle = false;
             if (line.length < 60 && (line === line.toUpperCase() || line.endsWith(':'))) {
-                isSectionTitle = true;
                 let titleClean = line.replace(/:$/, '');
                 currentSectionTitle = titleClean;
                 let nextLine = (i+1 < lines.length) ? lines[i+1].trim() : "";
@@ -91,15 +88,16 @@ function formatTextToJobHTML(rawText) {
             }
         }
     }
-    
-    if (inBullet) flushBulletSection();
+    if (inBullet && bulletItems.length > 0) {
+        flushBulletSection();
+    }
     
     if (output === "") {
         output = `<div class="job-header-preview"><h2>${escapeHtml(rawText.substring(0,60))}</h2><div class="job-location">📍 Lowongan</div></div>`;
     }
     
     let lower = rawText.toLowerCase();
-    if (lower.includes('wa') || lower.includes('whatsapp') || /08[0-9]{8,11}/.test(rawText)) {
+    if (lower.includes('wa') || lower.includes('whatsapp') || lower.includes('0821') || lower.includes('085')) {
         let waMatch = rawText.match(/08[0-9]{8,11}/);
         if (waMatch) {
             output += `<div class="contact-box-preview">📞 Kirim ke WhatsApp: ${waMatch[0]}</div>`;
@@ -107,13 +105,11 @@ function formatTextToJobHTML(rawText) {
             output += `<div class="contact-box-preview">📞 Hubungi via WhatsApp (lihat detail di atas)</div>`;
         }
     }
-    
     output += `<div class="footer-preview">⚡ SEGERA DAFTARKAN DIRIMU! ⚡<br>Loker Kendari Official</div>`;
     output += `<hr><div class="note-small">* Dokumen resmi lowongan pekerjaan</div>`;
     return output;
 }
 
-// Update preview
 function updatePreview() {
     let rawText = textInput.value;
     if (rawText.trim() === "") {
@@ -140,7 +136,6 @@ Semua Berkas dijadikan Satu File PDF dan dikirimkan langsung melalui WhatsApp ke
     previewDiv.innerHTML = formatTextToJobHTML(rawText);
 }
 
-// Download PDF
 async function downloadPDF() {
     const originalPreview = document.getElementById('livePreview');
     const cloneDiv = originalPreview.cloneNode(true);
@@ -179,5 +174,5 @@ async function downloadPDF() {
 }
 
 textInput.addEventListener('input', updatePreview);
-generateBtn.addEventListener('click', downloadPDF);
+downloadBtn.addEventListener('click', downloadPDF);
 updatePreview();
