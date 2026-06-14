@@ -2,124 +2,506 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konverter Teks ke PDF - Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>PDF Maker | Teks ke PDF Instan</title>
+    <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --border-color: #cbd5e1;
-        }
-
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(145deg, #e9f0fc 0%, #f5f9ff 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
         }
 
-        .container {
+        /* card utama */
+        .pdf-card {
+            max-width: 780px;
             width: 100%;
-            max-width: 1100px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(0px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
+        .pdf-card:hover {
+            transform: translateY(-3px);
         }
 
-        .panel-input {
+        /* header dekoratif */
+        .hero-head {
+            background: #1a2c3e;
+            padding: 1.8rem 2rem;
+            text-align: center;
+            background-image: radial-gradient(circle at 10% 30%, #2c4c6e, #0f212f);
+        }
+
+        .hero-head h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hero-head h1 span {
+            background: #ffb347;
+            background: linear-gradient(135deg, #ffcc80, #ffb347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: none;
+        }
+
+        .hero-head p {
+            color: #cbdbe6;
+            margin-top: 0.5rem;
+            font-weight: 450;
+            font-size: 0.95rem;
+        }
+
+        /* konten form */
+        .form-panel {
+            padding: 2rem 2rem 2.2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.8rem;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 0.6rem;
         }
 
-        h2 {
-            font-size: 1.3rem;
-            color: #0f172a;
-            margin-bottom: 5px;
-            border-left: 4px solid var(--primary-color);
-            padding-left: 10px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        label {
+        .input-group label {
             font-weight: 600;
             font-size: 0.9rem;
-            color: #475569;
-        }
-
-        input[type="text"], textarea, select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        input[type="text"]:focus, textarea:focus, select:focus {
-            border-color: var(--primary-color);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 180px;
-        }
-
-        .watermark-settings {
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .watermark-settings .full-width {
-            grid-column: span 2;
-        }
-
-        .btn-download {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
+            color: #1e2f3f;
+            letter-spacing: -0.2px;
             display: flex;
-            justify-content: center;
             align-items: center;
             gap: 8px;
         }
 
-        .btn-download:hover {
+        .input-group label i {
+            font-style: normal;
+            font-weight: 700;
+            background: #eef3fc;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #2c5a7a;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            font-size: 1rem;
+            font-family: 'Inter', monospace;
+            border: 1.5px solid #e2edf7;
+            border-radius: 1.2rem;
+            background: #ffffff;
+            transition: all 0.2s;
+            outline: none;
+            color: #1a2c3e;
+            font-weight: 500;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+        }
+
+        textarea {
+            min-height: 200px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        /* tombol utama */
+        .generate-btn {
+            width: 100%;
+            background: #1f3b4c;
+            border: none;
+            padding: 1rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            font-family: inherit;
+            color: white;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(95deg, #1f3b4c 0%, #2c5a7a 100%);
+            box-shadow: 0 8px 18px -8px rgba(0, 32, 64, 0.3);
+        }
+
+        .generate-btn:hover {
+            background: linear-gradient(95deg, #14313f, #1f4968);
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .generate-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* pesan notifikasi */
+        .message-area {
+            margin-top: 1.6rem;
+            padding: 0.8rem;
+            border-radius: 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.2s;
+            background: #f0f6fe;
+            color: #1e3a5f;
+        }
+
+        .message-area.success {
+            background: #e0f2e9;
+            color: #0a5c3e;
+            border-left: 5px solid #2ecc71;
+        }
+
+        .message-area.error {
+            background: #ffe8e6;
+            color: #b91c1c;
+            border-left: 5px solid #e74c3c;
+        }
+
+        /* sample kecil */
+        .sample-hint {
+            background: #f8fafd;
+            border-radius: 1rem;
+            padding: 0.8rem 1rem;
+            margin-top: 1.6rem;
+            font-size: 0.75rem;
+            color: #3f6b8c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            border: 1px solid #e5f0fa;
+        }
+
+        .sample-hint button {
+            background: none;
+            border: none;
+            color: #2c7da0;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 4px 12px;
+            border-radius: 40px;
+            transition: 0.1s;
+        }
+
+        .sample-hint button:hover {
+            background: #eef3fc;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #8aaec0;
+            padding: 1rem 1rem 1.2rem;
+            border-top: 1px solid #eaf3fc;
+            background: white;
+        }
+
+        @media (max-width: 550px) {
+            .form-panel {
+                padding: 1.5rem;
+            }
+            .hero-head h1 {
+                font-size: 1.5rem;
+            }
+            .hero-head {
+                padding: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="pdf-card">
+    <div class="hero-head">
+        <h1>
+            📄 
+            <span>PDF Builder</span>
+            ⚡
+        </h1>
+        <p>Masukkan judul file & teks Anda → buat PDF profesional instan</p>
+    </div>
+
+    <div class="form-panel">
+        <!-- Nama PDF (tanpa ekstensi otomatis) -->
+        <div class="input-group">
+            <label>
+                <i>📌</i> Nama PDF
+            </label>
+            <input type="text" id="pdfNameInput" placeholder="Contoh: laporan_kerja, catatan_rahasia, resume_saya" autocomplete="off">
+            <div style="font-size: 0.7rem; color: #5680a7; margin-top: -0.2rem;">* Nama otomatis diberi akhiran .pdf</div>
+        </div>
+
+        <!-- Input teks utama -->
+        <div class="input-group">
+            <label>
+                <i>✍️</i> Isi Konten Teks
+            </label>
+            <textarea id="textContentArea" placeholder="Tulis atau tempelkan teks Anda di sini.&#10;Gaya, laporan, essay, catatan, atau apapun yang ingin dijadikan PDF...&#10;&#10;Contoh:&#10;Halo, dunia! Ini dokumen pertama saya dari generator teks ke PDF."></textarea>
+        </div>
+
+        <!-- Tombol generator -->
+        <button class="generate-btn" id="generatePdfBtn">
+            🚀 Buat & Unduh PDF
+        </button>
+
+        <!-- area pesan sukses/error -->
+        <div id="notificationMessage" class="message-area">
+            💡 Siap membuat PDF — isi teks dan beri nama
+        </div>
+
+        <!-- fitur tambahan: isi contoh teks cepat -->
+        <div class="sample-hint">
+            <span>📋 Butuh contoh?</span>
+            <button id="fillSampleBtn">✨ Isi contoh teks panjang</button>
+            <button id="clearTextBtn">🗑️ Kosongkan teks</button>
+        </div>
+    </div>
+    <footer>
+        ⚡ Hasil PDF menggunakan jsPDF • Teks akan otomatis diatur halaman & margin • Nama file sesuai keinginan
+    </footer>
+</div>
+
+<script>
+    (function() {
+        // Ambil elemen DOM
+        const pdfNameInput = document.getElementById('pdfNameInput');
+        const textArea = document.getElementById('textContentArea');
+        const generateBtn = document.getElementById('generatePdfBtn');
+        const notificationDiv = document.getElementById('notificationMessage');
+        const fillSampleBtn = document.getElementById('fillSampleBtn');
+        const clearTextBtn = document.getElementById('clearTextBtn');
+
+        // fungsi menampilkan pesan user (sukses/error)
+        function showMessage(text, type = 'info') {
+            notificationDiv.innerHTML = text;
+            notificationDiv.classList.remove('success', 'error');
+            if (type === 'success') {
+                notificationDiv.classList.add('success');
+            } else if (type === 'error') {
+                notificationDiv.classList.add('error');
+            } else {
+                // default info style
+                notificationDiv.style.background = "#f0f6fe";
+                notificationDiv.style.color = "#1e3a5f";
+                notificationDiv.style.borderLeft = "none";
+            }
+            // auto hilang setelah 4 detik untuk sukses/error (optional)
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    if (notificationDiv.innerHTML === text) {
+                        notificationDiv.innerHTML = '💡 Siap membuat PDF — isi teks dan beri nama';
+                        notificationDiv.classList.remove('success', 'error');
+                        notificationDiv.style.background = "";
+                        notificationDiv.style.borderLeft = "";
+                    }
+                }, 3800);
+            }
+        }
+
+        // fungsi membersihkan nama file dari karakter ilegal untuk windows/unix
+        function sanitizeFileName(fileName) {
+            if (!fileName || fileName.trim() === "") return "dokumen_saya";
+            // hapus karakter berbahaya: \ / : * ? " < > | dan spacetab?
+            let clean = fileName.replace(/[\\/:*?"<>|]/g, '_');
+            // ganti spasi berlebih dengan underscore
+            clean = clean.trim().replace(/\s+/g, '_');
+            if (clean.length === 0) clean = "dokumen_saya";
+            return clean;
+        }
+
+        // Fungsi utama pembuatan PDF
+        function generatePDF() {
+            // Ambil nilai nama & teks
+            let rawName = pdfNameInput.value;
+            let content = textArea.value;
+
+            // Validasi: teks tidak boleh kosong
+            if (!content || content.trim() === "") {
+                showMessage("❌ Gagal: Teks masih kosong. Tulis atau tempelkan konten terlebih dahulu.", "error");
+                return;
+            }
+
+            // Sanitasi nama file
+            let cleanBaseName = sanitizeFileName(rawName);
+            let finalFileName = cleanBaseName + ".pdf";
+
+            try {
+                // inisialisasi jsPDF (format portrait, unit mm, ukuran A4 default)
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                });
+
+                // pengaturan margin & font
+                const marginLeft = 15;    // mm
+                const marginTop = 20;     // mm
+                const marginBottom = 20;  // mm
+                // dapatkan lebar halaman efektif untuk teks
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const maxTextWidth = pageWidth - (marginLeft * 2); // area teks kiri-kanan margin
+
+                // font dan ukuran standar
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(11);
+                const lineHeight = 7; // mm (kira-kira 1.2 line spacing untuk font 11pt)
+
+                // split text ke baris berdasarkan max width
+                const lines = doc.splitTextToSize(content, maxTextWidth);
+                
+                let currentY = marginTop;
+                let currentPage = 1;
+
+                // loop setiap baris
+                for (let i = 0; i < lines.length; i++) {
+                    const lineText = lines[i];
+                    // cek apakah perlu ganti halaman
+                    if (currentY + lineHeight > pageHeight - marginBottom) {
+                        doc.addPage();
+                        currentY = marginTop;
+                        currentPage++;
+                    }
+                    doc.text(lineText, marginLeft, currentY);
+                    currentY += lineHeight;
+                }
+
+                // optional: tambahkan nomor halaman sederhana jika lebih dari 1 halaman (elegan)
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'italic');
+                    doc.text(
+                        `Halaman ${i} dari ${totalPages}`,
+                        pageWidth - marginLeft - 15,
+                        pageHeight - 10,
+                        { align: 'center' }
+                    );
+                }
+
+                // simpan file dengan nama yang sudah ditentukan
+                doc.save(finalFileName);
+                
+                // notifikasi sukses
+                showMessage(`✅ Sukses! PDF "${finalFileName}" berhasil dibuat & diunduh.`, "success");
+                
+                // efek sedikit: fokus ke area teks? tidak perlu
+            } catch (err) {
+                console.error(err);
+                showMessage(`⚠️ Terjadi error: ${err.message || 'Gagal membuat PDF'}. Coba lagi.`, "error");
+            }
+        }
+
+        // fungsi mengisi contoh teks yang menarik dan panjang, untuk demo
+        function fillExampleText() {
+            const sampleLongText = `🌟 LAPORAN PROYEK INOVASI 🌟
+
+Halo! Ini adalah contoh dokumen yang dibuat langsung dari generator teks ke PDF.
+
+Anda dapat menulis berbagai macam konten:
+
+• Catatan rapat
+• Artikel blog
+• Tugas sekolah/kuliah
+• Kumpulan ide kreatif
+• Resep masakan favorit
+• Surat pribadi atau resmi
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Fitur unggulan dari website ini:
+1. Nama PDF bebas sesuai keinginan.
+2. Teks secara otomatis mengatur halaman (multi-page support).
+3. Margin rapi dan nomor halaman otomatis.
+4. Ringan dan langsung terunduh tanpa server.
+
+⚡ Tips: Anda bisa mengganti teks ini, lalu tekan tombol "Buat & Unduh PDF" untuk melihat hasilnya. Nama file bisa diisi "contoh_dokumen_pertama" atau sesuai keinginan.
+
+Terima kasih telah menggunakan PDF Builder!
+-- dibuat dengan jsPDF --`;
+            textArea.value = sampleLongText;
+            showMessage("✨ Contoh teks panjang berhasil dimasukkan! Anda bisa mengeditnya.", "info");
+            // optional: beri fokus ke area teks
+            textArea.focus();
+        }
+
+        function clearText() {
+            if (textArea.value.trim() !== "") {
+                textArea.value = "";
+                showMessage("🧹 Teks telah dikosongkan, silakan tulis konten baru.", "info");
+                textArea.focus();
+            } else {
+                showMessage("📭 Teks sudah kosong, silakan isi dengan konten Anda.", "info");
+            }
+        }
+
+        // Event listeners
+        generateBtn.addEventListener('click', generatePDF);
+        fillSampleBtn.addEventListener('click', fillExampleText);
+        clearTextBtn.addEventListener('click', clearText);
+
+        // tambahkan shortcut: tekan Ctrl+Enter (atau Cmd+Enter) pada textarea untuk generate PDF
+        textArea.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                generatePDF();
+            }
+        });
+
+        // optional: memberikan nilai default nama pdf ringan jika belum diisi (tidak paksa)
+        pdfNameInput.addEventListener('blur', function() {
+            let val = pdfNameInput.value.trim();
+            if (val === "") {
+                // tidak melakukan apa-apa, biarkan user. Tapi kita tidak set default otomatis biar tidak mengganggu
+            }
+        });
+
+        // Bersihkan notifikasi info setelah 3 detik jika hanya info biasa
+        console.log("PDF website ready");
+    })();
+</script>
+</body>
+</html>
