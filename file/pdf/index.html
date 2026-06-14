@@ -3,33 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat PDF Lowongan - Gaya Seperti Gambar</title>
+    <title>PDF Lowongan + Watermark</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-<div class="app-card">
-    <div class="header">
-        <h1>📄 PDF Lowongan Kerja</h1>
-        <p>Berdasarkan teks Anda → PDF gaya seperti gambar</p>
+<div class="app-wrapper">
+    <div class="form-side">
+        <div class="form-group">
+            <label>📁 Nama PDF (tanpa .pdf)</label>
+            <input type="text" id="pdfFileName" value="lowongan_watermark">
+        </div>
+        <div class="form-group">
+            <label>✍️ Teks Lowongan (gunakan format seperti contoh)</label>
+            <textarea id="jobTextInput" rows="20"></textarea>
+            <div class="tips">Gunakan tanda strip (-) untuk bullet list. Baris pertama otomatis jadi judul. Baris dengan "Nomor:" atau "Perihal:" akan masuk ke meta-info.</div>
+        </div>
+        <button id="downloadBtn">📥 Download PDF (dengan watermark)</button>
     </div>
-    <div class="two-columns">
-        <div class="input-area">
-            <div class="form-group">
-                <label>📁 Nama PDF (tanpa .pdf)</label>
-                <input type="text" id="pdfFileName" placeholder="misal: lowongan_fotokopi" value="lowongan_staff">
-            </div>
-            <div class="form-group">
-                <label>✍️ Isi Teks Lowongan (format bebas, gunakan - untuk bullet)</label>
-                <textarea id="jobTextInput" placeholder="Tulis teks lowongan di sini...&#10;Contoh format:&#10;DIBUTUHKAN STAFF WANITA UNTUK JAGA KIOS FOTOCOPY&#10;DI DEPAN KAMPUS UNSULTRA BARUGA&#10;&#10;KUALIFIKASI:&#10;- Usia Maksimal 30 Tahun&#10;- Pendidikan Minimal SMA&#10;&#10;SYARAT BERKAS:&#10;- Pasfoto 3x4&#10;- CV, KTP&#10;&#10;KIRIM KE WA: 0821 8841 1841"></textarea>
-                <div class="tips">💡 Tips: tulis judul di awal, gunakan tanda strip (-) untuk membuat bullet, tulis "KUALIFIKASI:" dll agar lebih rapi. Hasil PDF akan otomatis diformat mirip gambar lowongan.</div>
-            </div>
-            <button id="downloadBtn">📥 Download PDF</button>
-        </div>
-        <div class="preview-area">
-            <div class="preview-label">📄 Preview PDF (sesuai yang akan didownload)</div>
-            <div id="livePreview" class="pdf-preview"></div>
-        </div>
+    <div class="preview-side">
+        <div class="preview-label">📄 Preview PDF (watermark & teks)</div>
+        <div id="livePreview" class="pdf-preview"></div>
     </div>
 </div>
 <script src="script.js"></script>
