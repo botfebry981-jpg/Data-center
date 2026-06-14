@@ -1,9 +1,10 @@
-// Elemen DOM
+// DOM elements
 const fileNameInput = document.getElementById('pdfFileName');
 const textInput = document.getElementById('jobTextInput');
 const previewDiv = document.getElementById('livePreview');
 const downloadBtn = document.getElementById('downloadBtn');
 
+// Escape HTML
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, function(m) {
@@ -14,136 +15,143 @@ function escapeHtml(str) {
     });
 }
 
-function formatTextToJobHTML(rawText) {
-    if (!rawText.trim()) return '<p><em>Kosong — tulis teks lowongan di kolom kiri</em></p>';
-    
-    let lines = rawText.split(/\r?\n/);
-    let output = "";
-    let inBullet = false;
-    let bulletItems = [];
-    let currentSectionTitle = "";
-    let mainTitle = "";
-    let subLocation = "";
-    
-    function flushBulletSection() {
-        if (bulletItems.length === 0) return;
-        let html = `<div class="section-title-preview">${escapeHtml(currentSectionTitle)}</div>`;
-        html += `<ul class="custom-list">`;
-        bulletItems.forEach(item => {
-            html += `<li>${escapeHtml(item)}</li>`;
-        });
-        html += `</ul>`;
-        output += html;
-        bulletItems = [];
-        inBullet = false;
+// Fungsi memformat teks mentah menjadi struktur HTML dengan watermark
+function formatToWatermarkHTML(rawText) {
+    if (!rawText.trim()) {
+        rawText = `PENGUMUMAN LOWONGAN KERJA
+Nomor: 042/LKO/INFO/2026
+Perihal: Penerimaan Karyawan Baru
+
+Dengan hormat,
+
+Sehubungan dengan perkembangan ekspansi bisnis kami di wilayah Kendari dan sekitarnya, Loker Kendari Official membuka kesempatan berkarir bagi putra-putri daerah terbaik untuk bergabung bersama tim kami. Kami mencari individu yang dinamis, jujur, dan berdedikasi tinggi.
+
+Posisi yang Dibutuhkan:
+- Content Creator / Social Media Specialist
+- Administrative Assistant
+- Customer Relation Officer
+
+Persyaratan Umum:
+- Pria/Wanita, usia maksimal 28 tahun.
+- Pendidikan minimal Diploma (D3) atau Sarjana (S1) semua jurusan.
+- Mampu berkomunikasi dengan baik dan bekerja dalam tim.
+- Menguasai penggunaan komputer dasar (MS Office) dan aplikasi media sosial.
+- Domisili di Kota Kendari dan sekitarnya.
+
+Surat lamaran beserta CV dan dokumen pendukung dapat dikirimkan langsung melalui email resmi perusahaan kami paling lambat akhir bulan ini. Hanya kandidat yang memenuhi kualifikasi yang akan diproses ke tahap wawancara.
+
+Kendari, Juni 2026
+
+Manajemen Loker Kendari`;
+        textInput.value = rawText;
     }
     
+    const lines = rawText.split(/\r?\n/);
+    let title = "";
+    let metaNomor = "";
+    let metaPerihal = "";
+    let paragraphs = [];
+    let currentList = null;
+    let listItems = [];
+    let afterList = false;
+    
+    // parsing sederhana
     for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
         if (line === "") continue;
         
-        if (line.startsWith('-') || line.startsWith('•') || line.startsWith('*')) {
-            let cleanItem = line.replace(/^[-•*]\s*/, '');
-            if (!inBullet) {
-                if (currentSectionTitle === "") {
-                    currentSectionTitle = "KETERANGAN";
-                }
-                inBullet = true;
-            }
-            bulletItems.push(cleanItem);
-        } 
-        else {
-            if (inBullet) {
-                flushBulletSection();
-                inBullet = false;
-            }
-            if (line.length < 60 && (line === line.toUpperCase() || line.endsWith(':'))) {
-                let titleClean = line.replace(/:$/, '');
-                currentSectionTitle = titleClean;
-                let nextLine = (i+1 < lines.length) ? lines[i+1].trim() : "";
-                if (nextLine.startsWith('-') || nextLine.startsWith('•') || nextLine.startsWith('*')) {
-                    continue;
-                } else {
-                    output += `<div class="section-title-preview">${escapeHtml(titleClean)}</div>`;
-                    currentSectionTitle = "";
-                }
-            }
-            else {
-                if (output === "" && !mainTitle) {
-                    mainTitle = line;
-                    output += `<div class="job-header-preview"><h2>${escapeHtml(mainTitle)}</h2>`;
-                    let potentialLoc = (i+1 < lines.length) ? lines[i+1].trim() : "";
-                    if (potentialLoc && !potentialLoc.startsWith('-') && potentialLoc !== potentialLoc.toUpperCase()) {
-                        subLocation = potentialLoc;
-                        output += `<div class="job-location">📍 ${escapeHtml(subLocation)}</div>`;
-                        i++;
-                    } else {
-                        output += `<div class="job-location">📍 Lokasi tersedia</div>`;
-                    }
-                    output += `</div>`;
-                }
-                else {
-                    output += `<p style="margin: 8px 0;">${escapeHtml(line)}</p>`;
-                }
-            }
+        // Deteksi judul (baris pertama atau baris ALL CAPS panjang)
+        if (title === "" && (line === line.toUpperCase() || i === 0)) {
+            title = line;
+            continue;
         }
-    }
-    if (inBullet && bulletItems.length > 0) {
-        flushBulletSection();
-    }
-    
-    if (output === "") {
-        output = `<div class="job-header-preview"><h2>${escapeHtml(rawText.substring(0,60))}</h2><div class="job-location">📍 Lowongan</div></div>`;
-    }
-    
-    let lower = rawText.toLowerCase();
-    if (lower.includes('wa') || lower.includes('whatsapp') || lower.includes('0821') || lower.includes('085')) {
-        let waMatch = rawText.match(/08[0-9]{8,11}/);
-        if (waMatch) {
-            output += `<div class="contact-box-preview">📞 Kirim ke WhatsApp: ${waMatch[0]}</div>`;
+        // Deteksi meta Nomor:
+        if (line.toLowerCase().startsWith("nomor:")) {
+            metaNomor = line.substring(6).trim();
+            continue;
+        }
+        if (line.toLowerCase().startsWith("perihal:")) {
+            metaPerihal = line.substring(8).trim();
+            continue;
+        }
+        // Deteksi bullet list (diawali "-" atau "•")
+        if (line.startsWith('-') || line.startsWith('•')) {
+            let cleanItem = line.replace(/^[-•]\s*/, '');
+            if (!currentList) {
+                currentList = [];
+            }
+            currentList.push(cleanItem);
+            continue;
         } else {
-            output += `<div class="contact-box-preview">📞 Hubungi via WhatsApp (lihat detail di atas)</div>`;
+            if (currentList) {
+                paragraphs.push({ type: 'ul', items: currentList });
+                currentList = null;
+            }
+            // baris biasa -> paragraf
+            paragraphs.push({ type: 'p', text: line });
         }
     }
-    output += `<div class="footer-preview">⚡ SEGERA DAFTARKAN DIRIMU! ⚡<br>Loker Kendari Official</div>`;
-    output += `<hr><div class="note-small">* Dokumen resmi lowongan pekerjaan</div>`;
-    return output;
-}
-
-function updatePreview() {
-    let rawText = textInput.value;
-    if (rawText.trim() === "") {
-        rawText = `DIBUTUHKAN STAFF WANITA UNTUK JAGA KIOS FOTOCOPY
-DI DEPAN KAMPUS UNSULTRA BARUGA
-
-KUALIFIKASI:
-- Usia Maksimal 30 Tahun
-- Pendidikan Minimal SMA Sederajat
-- Tidak Sedang Kuliah
-- Belum Menikah
-- Mampu Mengoperasikan Komputer (Minimal Microsoft Word)
-- Berdomisili Tempat Tinggal di Baruga
-- Jujur, Disiplin dan Bertanggung Jawab
-
-SYARAT BERKAS:
-- Pasfoto Ukuran 3x4
-- CV, KTP, KK, Ijazah
-
-CATATAN PENGIRIMAN:
-Semua Berkas dijadikan Satu File PDF dan dikirimkan langsung melalui WhatsApp ke nomor: 0821 8841 1841`;
-        textInput.value = rawText;
+    if (currentList) {
+        paragraphs.push({ type: 'ul', items: currentList });
     }
-    previewDiv.innerHTML = formatTextToJobHTML(rawText);
+    
+    // Build HTML content
+    let contentHtml = `<div class="content-container">`;
+    contentHtml += `<h1>${escapeHtml(title)}</h1>`;
+    if (metaNomor || metaPerihal) {
+        contentHtml += `<div class="meta-info">`;
+        if (metaNomor) contentHtml += `<strong>Nomor:</strong> ${escapeHtml(metaNomor)}<br>`;
+        if (metaPerihal) contentHtml += `<strong>Perihal:</strong> ${escapeHtml(metaPerihal)}`;
+        contentHtml += `</div>`;
+    }
+    
+    for (let block of paragraphs) {
+        if (block.type === 'p') {
+            contentHtml += `<p>${escapeHtml(block.text)}</p>`;
+        } else if (block.type === 'ul') {
+            contentHtml += `<ul>`;
+            block.items.forEach(item => {
+                contentHtml += `<li>${escapeHtml(item)}</li>`;
+            });
+            contentHtml += `</ul>`;
+        }
+    }
+    
+    // Tambahkan tanda tangan jika tidak ada di teks
+    if (!rawText.includes("Manajemen") && !rawText.includes("Kendari,")) {
+        contentHtml += `<div class="signature">Kendari, ${new Date().toLocaleDateString('id-ID', { year:'numeric', month:'long'})}<br><br><br><strong>Manajemen Loker Kendari</strong></div>`;
+    }
+    contentHtml += `</div>`;
+    
+    // Gabungkan dengan watermark grid
+    const watermarkHtml = `
+        <div class="watermark-grid">
+            ${Array(8).fill().map(() => `
+                <div class="watermark-cell"><div class="watermark-text">LOKER KENDARI OFFICIAL</div></div>
+            `).join('')}
+        </div>
+    `;
+    
+    return watermarkHtml + contentHtml;
 }
 
+// Update preview
+function updatePreview() {
+    const rawText = textInput.value;
+    const fullHtml = formatToWatermarkHTML(rawText);
+    previewDiv.innerHTML = fullHtml;
+}
+
+// Download PDF (clone area preview)
 async function downloadPDF() {
     const originalPreview = document.getElementById('livePreview');
     const cloneDiv = originalPreview.cloneNode(true);
-    cloneDiv.style.padding = "20px";
-    cloneDiv.style.backgroundColor = "white";
+    // pastikan ukuran dan padding untuk cetak
     cloneDiv.style.width = "210mm";
-    cloneDiv.style.margin = "0 auto";
-    cloneDiv.style.fontFamily = "'Times New Roman', Georgia, serif";
+    cloneDiv.style.minHeight = "297mm";
+    cloneDiv.style.padding = "20mm";
+    cloneDiv.style.backgroundColor = "white";
+    cloneDiv.style.margin = "0";
     
     const tempContainer = document.createElement('div');
     tempContainer.appendChild(cloneDiv);
@@ -153,15 +161,15 @@ async function downloadPDF() {
     document.body.appendChild(tempContainer);
     
     let fileName = fileNameInput.value.trim();
-    if (fileName === "") fileName = "lowongan_pekerjaan";
+    if (fileName === "") fileName = "lowongan_watermark";
     const safeName = fileName.replace(/[\\/:*?"<>|]/g, '_') + ".pdf";
     
     const opt = {
-        margin:        [0.5, 0.5, 0.5, 0.5],
+        margin:        [0, 0, 0, 0], // karena sudah ada padding di dalam clone
         filename:      safeName,
         image:         { type: 'jpeg', quality: 0.98 },
         html2canvas:   { scale: 2, letterRendering: true },
-        jsPDF:         { unit: 'in', format: 'a4', orientation: 'portrait' }
+        jsPDF:         { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     
     try {
