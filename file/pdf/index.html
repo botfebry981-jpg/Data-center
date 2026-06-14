@@ -2,10 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>PDF Maker | Teks ke PDF Instan</title>
-    <!-- jsPDF library for PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buat PDF Lowongan - Gaya Seperti Gambar</title>
+    <!-- html2pdf bundle -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,8 +14,8 @@
         }
 
         body {
-            background: linear-gradient(145deg, #e9f0fc 0%, #f5f9ff 100%);
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: linear-gradient(145deg, #e2e8f0 0%, #f1f5f9 100%);
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -24,484 +24,465 @@
         }
 
         /* card utama */
-        .pdf-card {
-            max-width: 780px;
+        .app-card {
+            max-width: 1100px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.97);
-            backdrop-filter: blur(0px);
-            border-radius: 2.5rem;
-            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            transition: transform 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: 0.2s;
         }
 
-        .pdf-card:hover {
-            transform: translateY(-3px);
-        }
-
-        /* header dekoratif */
-        .hero-head {
-            background: #1a2c3e;
-            padding: 1.8rem 2rem;
+        /* header */
+        .header {
+            background: #1e293b;
+            padding: 1.3rem 2rem;
             text-align: center;
-            background-image: radial-gradient(circle at 10% 30%, #2c4c6e, #0f212f);
         }
-
-        .hero-head h1 {
-            font-size: 1.9rem;
+        .header h1 {
+            font-size: 1.8rem;
+            color: white;
             font-weight: 700;
             letter-spacing: -0.3px;
-            color: white;
+        }
+        .header p {
+            color: #94a3b8;
+            margin-top: 0.3rem;
+        }
+
+        /* dua kolom */
+        .two-columns {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
             flex-wrap: wrap;
+            gap: 1.8rem;
+            padding: 2rem;
+        }
+        .input-area {
+            flex: 1;
+            min-width: 260px;
+        }
+        .preview-area {
+            flex: 1.2;
+            min-width: 280px;
+            background: #fef9ef;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05), 0 8px 20px rgba(0,0,0,0.1);
         }
 
-        .hero-head h1 span {
-            background: #ffb347;
-            background: linear-gradient(135deg, #ffcc80, #ffb347);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: none;
+        .form-group {
+            margin-bottom: 1.5rem;
         }
-
-        .hero-head p {
-            color: #cbdbe6;
-            margin-top: 0.5rem;
-            font-weight: 450;
-            font-size: 0.95rem;
-        }
-
-        /* konten form */
-        .form-panel {
-            padding: 2rem 2rem 2.2rem;
-        }
-
-        .input-group {
-            margin-bottom: 1.8rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
-
-        .input-group label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #1e2f3f;
-            letter-spacing: -0.2px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .input-group label i {
-            font-style: normal;
+        .form-group label {
             font-weight: 700;
-            background: #eef3fc;
-            width: 24px;
-            height: 24px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            color: #2c5a7a;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+            font-size: 0.9rem;
         }
-
         input, textarea {
             width: 100%;
-            padding: 0.9rem 1rem;
-            font-size: 1rem;
-            font-family: 'Inter', monospace;
-            border: 1.5px solid #e2edf7;
-            border-radius: 1.2rem;
-            background: #ffffff;
-            transition: all 0.2s;
-            outline: none;
-            color: #1a2c3e;
-            font-weight: 500;
+            padding: 12px 16px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            transition: 0.2s;
             resize: vertical;
         }
-
         input:focus, textarea:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+            border-color: #f97316;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.2);
         }
-
         textarea {
-            min-height: 200px;
-            line-height: 1.5;
-            font-size: 0.95rem;
+            min-height: 380px;
+            font-family: 'Courier New', monospace;
         }
-
-        /* tombol utama */
-        .generate-btn {
-            width: 100%;
-            background: #1f3b4c;
+        button {
+            background: #f97316;
             border: none;
-            padding: 1rem;
-            font-size: 1.05rem;
-            font-weight: 700;
-            font-family: inherit;
+            width: 100%;
+            padding: 12px;
+            font-weight: bold;
+            font-size: 1rem;
             color: white;
             border-radius: 2rem;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: 0.2s;
             margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: linear-gradient(95deg, #1f3b4c 0%, #2c5a7a 100%);
-            box-shadow: 0 8px 18px -8px rgba(0, 32, 64, 0.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-
-        .generate-btn:hover {
-            background: linear-gradient(95deg, #14313f, #1f4968);
+        button:hover {
+            background: #ea580c;
             transform: scale(0.98);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .generate-btn:active {
-            transform: scale(0.97);
-        }
-
-        /* pesan notifikasi */
-        .message-area {
-            margin-top: 1.6rem;
-            padding: 0.8rem;
-            border-radius: 1.2rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-align: center;
-            transition: all 0.2s;
-            background: #f0f6fe;
-            color: #1e3a5f;
-        }
-
-        .message-area.success {
-            background: #e0f2e9;
-            color: #0a5c3e;
-            border-left: 5px solid #2ecc71;
-        }
-
-        .message-area.error {
-            background: #ffe8e6;
-            color: #b91c1c;
-            border-left: 5px solid #e74c3c;
-        }
-
-        /* sample kecil */
-        .sample-hint {
-            background: #f8fafd;
-            border-radius: 1rem;
-            padding: 0.8rem 1rem;
-            margin-top: 1.6rem;
-            font-size: 0.75rem;
-            color: #3f6b8c;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            border: 1px solid #e5f0fa;
-        }
-
-        .sample-hint button {
-            background: none;
-            border: none;
-            color: #2c7da0;
-            font-weight: 600;
-            font-size: 0.75rem;
-            cursor: pointer;
-            text-decoration: underline;
-            padding: 4px 12px;
-            border-radius: 40px;
-            transition: 0.1s;
-        }
-
-        .sample-hint button:hover {
-            background: #eef3fc;
-        }
-
-        footer {
-            text-align: center;
-            font-size: 0.7rem;
-            color: #8aaec0;
-            padding: 1rem 1rem 1.2rem;
-            border-top: 1px solid #eaf3fc;
+        /* style preview / hasil PDF (persis seperti gambar lowongan) */
+        .pdf-preview {
             background: white;
+            padding: 24px 22px;
+            border-radius: 1.2rem;
+            font-family: 'Times New Roman', Georgia, serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-
-        @media (max-width: 550px) {
-            .form-panel {
-                padding: 1.5rem;
-            }
-            .hero-head h1 {
-                font-size: 1.5rem;
-            }
-            .hero-head {
-                padding: 1.2rem;
-            }
+        .preview-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #b45309;
+            letter-spacing: 1px;
+        }
+        .job-header-preview {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .job-header-preview h2 {
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #c2410c;
+            background: #fff0e0;
+            display: inline-block;
+            padding: 5px 18px;
+            border-radius: 30px;
+        }
+        .job-location {
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 10px;
+            border-top: 2px solid #fed7aa;
+            border-bottom: 2px solid #fed7aa;
+            padding: 6px 0;
+            background: #fffaf5;
+            text-align: center;
+        }
+        .section-title-preview {
+            font-weight: 800;
+            font-size: 17px;
+            margin: 18px 0 8px 0;
+            color: #2c3e66;
+            border-left: 5px solid #f97316;
+            padding-left: 12px;
+        }
+        .custom-list {
+            margin: 6px 0 8px 25px;
+            list-style: none;
+        }
+        .custom-list li {
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .custom-list li::before {
+            content: "•";
+            color: #e67e22;
+            font-weight: bold;
+            font-size: 18px;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+        .contact-box-preview {
+            background: #fef2e0;
+            padding: 10px 16px;
+            border-radius: 18px;
+            margin: 15px 0 12px;
+            border: 1px solid #ffd9a5;
+            text-align: center;
+            font-weight: bold;
+        }
+        .footer-preview {
+            text-align: center;
+            margin-top: 20px;
+            border-top: 1px solid #f0d5b0;
+            padding-top: 10px;
+            font-weight: bold;
+            font-size: 13px;
+            color: #4a3b2c;
+        }
+        hr {
+            margin: 8px 0;
+            border: 0;
+            height: 1px;
+            background: #ffe0b5;
+        }
+        .note-small {
+            font-size: 9px;
+            text-align: center;
+            color: #8b7a66;
         }
     </style>
 </head>
 <body>
-
-<div class="pdf-card">
-    <div class="hero-head">
-        <h1>
-            📄 
-            <span>PDF Builder</span>
-            ⚡
-        </h1>
-        <p>Masukkan judul file & teks Anda → buat PDF profesional instan</p>
+<div class="app-card">
+    <div class="header">
+        <h1>📄 PDF Lowongan Kerja</h1>
+        <p>Berdasarkan teks Anda → PDF gaya seperti gambar</p>
     </div>
-
-    <div class="form-panel">
-        <!-- Nama PDF (tanpa ekstensi otomatis) -->
-        <div class="input-group">
-            <label>
-                <i>📌</i> Nama PDF
-            </label>
-            <input type="text" id="pdfNameInput" placeholder="Contoh: laporan_kerja, catatan_rahasia, resume_saya" autocomplete="off">
-            <div style="font-size: 0.7rem; color: #5680a7; margin-top: -0.2rem;">* Nama otomatis diberi akhiran .pdf</div>
+    <div class="two-columns">
+        <!-- KIRI: input nama pdf + teks -->
+        <div class="input-area">
+            <div class="form-group">
+                <label>📁 Nama PDF (tanpa .pdf)</label>
+                <input type="text" id="pdfFileName" placeholder="misal: lowongan_fotokopi" value="lowongan_staff">
+            </div>
+            <div class="form-group">
+                <label>✍️ Isi Teks Lowongan (format bebas, gunakan - untuk bullet)</label>
+                <textarea id="jobTextInput" placeholder="Tulis teks lowongan di sini...&#10;Contoh format:&#10;DIBUTUHKAN STAFF WANITA UNTUK JAGA KIOS FOTOCOPY&#10;DI DEPAN KAMPUS UNSULTRA BARUGA&#10;&#10;KUALIFIKASI:&#10;- Usia Maksimal 30 Tahun&#10;- Pendidikan Minimal SMA&#10;&#10;SYARAT BERKAS:&#10;- Pasfoto 3x4&#10;- CV, KTP&#10;&#10;KIRIM KE WA: 0821 8841 1841"></textarea>
+                <div style="font-size: 11px; margin-top: 5px; color: #f97316;">💡 Tips: tulis judul di awal, gunakan tanda strip (-) untuk membuat bullet, tulis "KUALIFIKASI:" dll agar lebih rapi. Hasil PDF akan otomatis diformat mirip gambar lowongan.</div>
+            </div>
+            <button id="generateBtn">🚀 BUAT & UNDUH PDF</button>
         </div>
 
-        <!-- Input teks utama -->
-        <div class="input-group">
-            <label>
-                <i>✍️</i> Isi Konten Teks
-            </label>
-            <textarea id="textContentArea" placeholder="Tulis atau tempelkan teks Anda di sini.&#10;Gaya, laporan, essay, catatan, atau apapun yang ingin dijadikan PDF...&#10;&#10;Contoh:&#10;Halo, dunia! Ini dokumen pertama saya dari generator teks ke PDF."></textarea>
-        </div>
-
-        <!-- Tombol generator -->
-        <button class="generate-btn" id="generatePdfBtn">
-            🚀 Buat & Unduh PDF
-        </button>
-
-        <!-- area pesan sukses/error -->
-        <div id="notificationMessage" class="message-area">
-            💡 Siap membuat PDF — isi teks dan beri nama
-        </div>
-
-        <!-- fitur tambahan: isi contoh teks cepat -->
-        <div class="sample-hint">
-            <span>📋 Butuh contoh?</span>
-            <button id="fillSampleBtn">✨ Isi contoh teks panjang</button>
-            <button id="clearTextBtn">🗑️ Kosongkan teks</button>
+        <!-- KANAN: preview realtime -->
+        <div class="preview-area">
+            <div class="preview-label">📄 Preview PDF (sesuai yang akan didownload)</div>
+            <div id="livePreview" class="pdf-preview">
+                <!-- preview akan diisi javascript -->
+            </div>
         </div>
     </div>
-    <footer>
-        ⚡ Hasil PDF menggunakan jsPDF • Teks akan otomatis diatur halaman & margin • Nama file sesuai keinginan
-    </footer>
 </div>
 
 <script>
-    (function() {
-        // Ambil elemen DOM
-        const pdfNameInput = document.getElementById('pdfNameInput');
-        const textArea = document.getElementById('textContentArea');
-        const generateBtn = document.getElementById('generatePdfBtn');
-        const notificationDiv = document.getElementById('notificationMessage');
-        const fillSampleBtn = document.getElementById('fillSampleBtn');
-        const clearTextBtn = document.getElementById('clearTextBtn');
+    // Elemen
+    const fileNameInput = document.getElementById('pdfFileName');
+    const textInput = document.getElementById('jobTextInput');
+    const previewDiv = document.getElementById('livePreview');
+    const generateBtn = document.getElementById('generateBtn');
 
-        // fungsi menampilkan pesan user (sukses/error)
-        function showMessage(text, type = 'info') {
-            notificationDiv.innerHTML = text;
-            notificationDiv.classList.remove('success', 'error');
-            if (type === 'success') {
-                notificationDiv.classList.add('success');
-            } else if (type === 'error') {
-                notificationDiv.classList.add('error');
-            } else {
-                // default info style
-                notificationDiv.style.background = "#f0f6fe";
-                notificationDiv.style.color = "#1e3a5f";
-                notificationDiv.style.borderLeft = "none";
-            }
-            // auto hilang setelah 4 detik untuk sukses/error (optional)
-            if (type === 'success' || type === 'error') {
-                setTimeout(() => {
-                    if (notificationDiv.innerHTML === text) {
-                        notificationDiv.innerHTML = '💡 Siap membuat PDF — isi teks dan beri nama';
-                        notificationDiv.classList.remove('success', 'error');
-                        notificationDiv.style.background = "";
-                        notificationDiv.style.borderLeft = "";
+    // Fungsi untuk mengubah teks mentah menjadi HTML dengan gaya lowongan (mirip gambar)
+    function formatTextToJobHTML(rawText) {
+        if (!rawText.trim()) return '<p><em>Kosong — tulis teks lowongan di kolom kiri</em></p>';
+        
+        let lines = rawText.split(/\r?\n/);
+        // variabel untuk menampung HTML
+        let titleText = "";
+        let locationText = "";
+        let sections = []; // menyimpan {title, items, type}
+        let currentSection = { title: "", items: [], type: "normal" };
+        let isFirstLine = true;
+        let afterTitle = false;
+        let mainTitle = "";
+        let subLocation = "";
+        
+        // parsing sederhana: baris pertama dianggap judul utama jika tidak diawali strip
+        // baris kedua mungkin lokasi, kemudian bagian dengan keyword KUALIFIKASI, SYARAT, dll.
+        // tapi agar fleksibel, kita akan deteksi baris yang mengandung ':' atau huruf besar sebagai section title.
+        // Namun untuk memudahkan, kita akan membuat parser fleksibel:
+        // - Jika baris diawali "- " atau "* " -> item bullet
+        // - Jika baris berakhiran ":" atau ALL CAPS pendek -> dianggap section title
+        // - Baris biasa (tanpa bullet) akan dianggap paragraf (tapi dalam lowongan biasanya hanya judul, lokasi, dan section)
+        
+        let output = "";
+        let inBullet = false;
+        let bulletItems = [];
+        let currentSectionTitle = "";
+        
+        // fungsi untuk merender section dengan bullet
+        function flushBulletSection() {
+            if (bulletItems.length === 0) return;
+            let html = `<div class="section-title-preview">${currentSectionTitle}</div>`;
+            html += `<ul class="custom-list">`;
+            bulletItems.forEach(item => {
+                html += `<li>${escapeHtml(item)}</li>`;
+            });
+            html += `</ul>`;
+            output += html;
+            bulletItems = [];
+            inBullet = false;
+        }
+        
+        // loop baris
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+            if (line === "") continue;
+            
+            // deteksi jika baris diawali strip atau dash (bullet)
+            if (line.startsWith('-') || line.startsWith('•') || line.startsWith('*')) {
+                let cleanItem = line.replace(/^[-•*]\s*/, '');
+                if (!inBullet) {
+                    // jika sebelumnya tidak dalam bullet, mungkin section title sudah diset? kita pastikan ada section title terakhir
+                    if (currentSectionTitle === "") {
+                        currentSectionTitle = "KETERANGAN";
                     }
-                }, 3800);
-            }
-        }
-
-        // fungsi membersihkan nama file dari karakter ilegal untuk windows/unix
-        function sanitizeFileName(fileName) {
-            if (!fileName || fileName.trim() === "") return "dokumen_saya";
-            // hapus karakter berbahaya: \ / : * ? " < > | dan spacetab?
-            let clean = fileName.replace(/[\\/:*?"<>|]/g, '_');
-            // ganti spasi berlebih dengan underscore
-            clean = clean.trim().replace(/\s+/g, '_');
-            if (clean.length === 0) clean = "dokumen_saya";
-            return clean;
-        }
-
-        // Fungsi utama pembuatan PDF
-        function generatePDF() {
-            // Ambil nilai nama & teks
-            let rawName = pdfNameInput.value;
-            let content = textArea.value;
-
-            // Validasi: teks tidak boleh kosong
-            if (!content || content.trim() === "") {
-                showMessage("❌ Gagal: Teks masih kosong. Tulis atau tempelkan konten terlebih dahulu.", "error");
-                return;
-            }
-
-            // Sanitasi nama file
-            let cleanBaseName = sanitizeFileName(rawName);
-            let finalFileName = cleanBaseName + ".pdf";
-
-            try {
-                // inisialisasi jsPDF (format portrait, unit mm, ukuran A4 default)
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait'
-                });
-
-                // pengaturan margin & font
-                const marginLeft = 15;    // mm
-                const marginTop = 20;     // mm
-                const marginBottom = 20;  // mm
-                // dapatkan lebar halaman efektif untuk teks
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const pageHeight = doc.internal.pageSize.getHeight();
-                const maxTextWidth = pageWidth - (marginLeft * 2); // area teks kiri-kanan margin
-
-                // font dan ukuran standar
-                doc.setFont('helvetica', 'normal');
-                doc.setFontSize(11);
-                const lineHeight = 7; // mm (kira-kira 1.2 line spacing untuk font 11pt)
-
-                // split text ke baris berdasarkan max width
-                const lines = doc.splitTextToSize(content, maxTextWidth);
-                
-                let currentY = marginTop;
-                let currentPage = 1;
-
-                // loop setiap baris
-                for (let i = 0; i < lines.length; i++) {
-                    const lineText = lines[i];
-                    // cek apakah perlu ganti halaman
-                    if (currentY + lineHeight > pageHeight - marginBottom) {
-                        doc.addPage();
-                        currentY = marginTop;
-                        currentPage++;
+                    inBullet = true;
+                }
+                bulletItems.push(cleanItem);
+            } 
+            else {
+                // bukan bullet, flush dulu jika ada bullet tersimpan
+                if (inBullet) {
+                    flushBulletSection();
+                    inBullet = false;
+                }
+                // cek apakah baris ini section title? (biasanya ALL CAPS atau diakhiri titik dua)
+                let isSectionTitle = false;
+                if (line.length < 60 && (line === line.toUpperCase() || line.endsWith(':'))) {
+                    isSectionTitle = true;
+                    let titleClean = line.replace(/:$/, '');
+                    currentSectionTitle = titleClean;
+                    // tidak perlu langsung output, nanti akan dipakai untuk bullet berikutnya
+                    // tetapi jika tidak ada bullet setelahnya, kita tetap tampilkan title saja
+                    // kita simpan dulu, dan jika setelah ini tidak ada bullet, kita render title biasa.
+                    // lebih baik kita simpan state: section title tanpa bullet -> tampilkan sebagai teks tebal
+                    // Tapi karena kebanyakan lowongan memiliki bullet setelah section, kita cek ke depan? sederhana: kita simpan title lalu jika baris berikutnya bullet, maka dia akan jadi bagian dari section itu. jika tidak, kita render title saja.
+                    // kita cek next line apakah bullet?
+                    let nextLine = (i+1 < lines.length) ? lines[i+1].trim() : "";
+                    if (nextLine.startsWith('-') || nextLine.startsWith('•') || nextLine.startsWith('*')) {
+                        // ada bullet setelahnya, simpan title untuk section
+                        continue; // title akan digunakan saat flush
+                    } else {
+                        // tidak ada bullet, render title biasa dengan gaya
+                        output += `<div class="section-title-preview">${escapeHtml(titleClean)}</div>`;
+                        currentSectionTitle = "";
                     }
-                    doc.text(lineText, marginLeft, currentY);
-                    currentY += lineHeight;
                 }
-
-                // optional: tambahkan nomor halaman sederhana jika lebih dari 1 halaman (elegan)
-                const totalPages = doc.internal.getNumberOfPages();
-                for (let i = 1; i <= totalPages; i++) {
-                    doc.setPage(i);
-                    doc.setFontSize(9);
-                    doc.setFont('helvetica', 'italic');
-                    doc.text(
-                        `Halaman ${i} dari ${totalPages}`,
-                        pageWidth - marginLeft - 15,
-                        pageHeight - 10,
-                        { align: 'center' }
-                    );
+                else {
+                    // baris biasa, bukan bullet dan bukan section title -> mungkin judul utama atau lokasi
+                    if (output === "" && !mainTitle) {
+                        // judul utama
+                        mainTitle = line;
+                        output += `<div class="job-header-preview"><h2>${escapeHtml(mainTitle)}</h2>`;
+                        // cari baris berikutnya untuk lokasi?
+                        let potentialLoc = (i+1 < lines.length) ? lines[i+1].trim() : "";
+                        if (potentialLoc && !potentialLoc.startsWith('-') && potentialLoc !== potentialLoc.toUpperCase()) {
+                            subLocation = potentialLoc;
+                            output += `<div class="job-location">📍 ${escapeHtml(subLocation)}</div>`;
+                            i++; // skip baris lokasi
+                        } else {
+                            output += `<div class="job-location">📍 Lokasi tersedia</div>`;
+                        }
+                        output += `</div>`;
+                    }
+                    else {
+                        // paragraf biasa (jarang terjadi, bisa ditampilkan sebagai teks)
+                        output += `<p style="margin: 8px 0;">${escapeHtml(line)}</p>`;
+                    }
                 }
-
-                // simpan file dengan nama yang sudah ditentukan
-                doc.save(finalFileName);
-                
-                // notifikasi sukses
-                showMessage(`✅ Sukses! PDF "${finalFileName}" berhasil dibuat & diunduh.`, "success");
-                
-                // efek sedikit: fokus ke area teks? tidak perlu
-            } catch (err) {
-                console.error(err);
-                showMessage(`⚠️ Terjadi error: ${err.message || 'Gagal membuat PDF'}. Coba lagi.`, "error");
             }
         }
-
-        // fungsi mengisi contoh teks yang menarik dan panjang, untuk demo
-        function fillExampleText() {
-            const sampleLongText = `🌟 LAPORAN PROYEK INOVASI 🌟
-
-Halo! Ini adalah contoh dokumen yang dibuat langsung dari generator teks ke PDF.
-
-Anda dapat menulis berbagai macam konten:
-
-• Catatan rapat
-• Artikel blog
-• Tugas sekolah/kuliah
-• Kumpulan ide kreatif
-• Resep masakan favorit
-• Surat pribadi atau resmi
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-Fitur unggulan dari website ini:
-1. Nama PDF bebas sesuai keinginan.
-2. Teks secara otomatis mengatur halaman (multi-page support).
-3. Margin rapi dan nomor halaman otomatis.
-4. Ringan dan langsung terunduh tanpa server.
-
-⚡ Tips: Anda bisa mengganti teks ini, lalu tekan tombol "Buat & Unduh PDF" untuk melihat hasilnya. Nama file bisa diisi "contoh_dokumen_pertama" atau sesuai keinginan.
-
-Terima kasih telah menggunakan PDF Builder!
--- dibuat dengan jsPDF --`;
-            textArea.value = sampleLongText;
-            showMessage("✨ Contoh teks panjang berhasil dimasukkan! Anda bisa mengeditnya.", "info");
-            // optional: beri fokus ke area teks
-            textArea.focus();
+        // setelah loop, flush sisa bullet
+        if (inBullet && bulletItems.length > 0) {
+            flushBulletSection();
         }
-
-        function clearText() {
-            if (textArea.value.trim() !== "") {
-                textArea.value = "";
-                showMessage("🧹 Teks telah dikosongkan, silakan tulis konten baru.", "info");
-                textArea.focus();
+        
+        // jika output masih kosong, fallback
+        if (output === "") {
+            output = `<div class="job-header-preview"><h2>${escapeHtml(rawText.substring(0,60))}</h2><div class="job-location">📍 Lowongan</div></div>`;
+        }
+        
+        // tambahkan footer otomatis seperti gambar? (opsional tapi bagus)
+        // cek apakah sudah ada nomor WA? jika tidak, kita tidak paksa. tapi kita tambahkan default?
+        // tidak perlu, biar sesuai input user.
+        // tambahkan box kontak jika teks mengandung kata "WA", "whatsapp", atau nomor.
+        let lower = rawText.toLowerCase();
+        if (lower.includes('wa') || lower.includes('whatsapp') || lower.includes('0821') || lower.includes('085')) {
+            // kita ekstrak nomor sederhana? lebih baik biarkan user menulis di teks.
+            // tapi kita tambahkan box kontak gaya khas jika ada pola nomor.
+            let waMatch = rawText.match(/08[0-9]{8,11}/);
+            if (waMatch) {
+                let waNumber = waMatch[0];
+                output += `<div class="contact-box-preview">📞 Kirim ke WhatsApp: ${waNumber}</div>`;
             } else {
-                showMessage("📭 Teks sudah kosong, silakan isi dengan konten Anda.", "info");
+                // tetap tambahkan box untuk menonjolkan
+                output += `<div class="contact-box-preview">📞 Hubungi via WhatsApp (lihat detail di atas)</div>`;
             }
         }
-
-        // Event listeners
-        generateBtn.addEventListener('click', generatePDF);
-        fillSampleBtn.addEventListener('click', fillExampleText);
-        clearTextBtn.addEventListener('click', clearText);
-
-        // tambahkan shortcut: tekan Ctrl+Enter (atau Cmd+Enter) pada textarea untuk generate PDF
-        textArea.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                generatePDF();
-            }
+        // footer instansi
+        output += `<div class="footer-preview">⚡ SEGERA DAFTARKAN DIRIMU! ⚡<br>Loker Kendari Official</div>`;
+        output += `<hr><div class="note-small">* Dokumen resmi lowongan pekerjaan</div>`;
+        return output;
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
         });
+    }
+    
+    // update preview setiap kali input berubah
+    function updatePreview() {
+        let rawText = textInput.value;
+        // jika kosong, isi default dengan contoh dari gambar lowongan
+        if (rawText.trim() === "") {
+            rawText = `DIBUTUHKAN STAFF WANITA UNTUK JAGA KIOS FOTOCOPY
+DI DEPAN KAMPUS UNSULTRA BARUGA
 
-        // optional: memberikan nilai default nama pdf ringan jika belum diisi (tidak paksa)
-        pdfNameInput.addEventListener('blur', function() {
-            let val = pdfNameInput.value.trim();
-            if (val === "") {
-                // tidak melakukan apa-apa, biarkan user. Tapi kita tidak set default otomatis biar tidak mengganggu
-            }
-        });
+KUALIFIKASI:
+- Usia Maksimal 30 Tahun
+- Pendidikan Minimal SMA Sederajat
+- Tidak Sedang Kuliah
+- Belum Menikah
+- Mampu Mengoperasikan Komputer (Minimal Microsoft Word)
+- Berdomisili Tempat Tinggal di Baruga
+- Jujur, Disiplin dan Bertanggung Jawab
 
-        // Bersihkan notifikasi info setelah 3 detik jika hanya info biasa
-        console.log("PDF website ready");
-    })();
+SYARAT BERKAS:
+- Pasfoto Ukuran 3x4
+- CV, KTP, KK, Ijazah
+
+CATATAN PENGIRIMAN:
+Semua Berkas dijadikan Satu File PDF dan dikirimkan langsung melalui WhatsApp ke nomor: 0821 8841 1841`;
+            textInput.value = rawText;
+        }
+        let htmlContent = formatTextToJobHTML(rawText);
+        previewDiv.innerHTML = htmlContent;
+    }
+    
+    // fungsi download PDF menggunakan html2pdf dari elemen preview (clone agar tidak mengganggu tampilan)
+    async function downloadPDF() {
+        const originalPreview = document.getElementById('livePreview');
+        // clone area preview untuk dijadikan PDF (menghindari perubahan layout asli)
+        const cloneDiv = originalPreview.cloneNode(true);
+        cloneDiv.style.padding = "20px";
+        cloneDiv.style.backgroundColor = "white";
+        cloneDiv.style.width = "210mm"; // ukuran A4 lebar
+        cloneDiv.style.margin = "0 auto";
+        cloneDiv.style.fontFamily = "'Times New Roman', Georgia, serif";
+        // buat elemen sementara
+        const tempContainer = document.createElement('div');
+        tempContainer.appendChild(cloneDiv);
+        tempContainer.style.position = "absolute";
+        tempContainer.style.left = "-9999px";
+        tempContainer.style.top = "0";
+        document.body.appendChild(tempContainer);
+        
+        let fileName = fileNameInput.value.trim();
+        if (fileName === "") fileName = "lowongan_pekerjaan";
+        const safeName = fileName.replace(/[\\/:*?"<>|]/g, '_') + ".pdf";
+        
+        const opt = {
+            margin:        [0.5, 0.5, 0.5, 0.5],
+            filename:      safeName,
+            image:         { type: 'jpeg', quality: 0.98 },
+            html2canvas:   { scale: 2, letterRendering: true },
+            jsPDF:         { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        
+        try {
+            await html2pdf().set(opt).from(cloneDiv).save();
+        } catch(e) {
+            alert("Gagal generate PDF: " + e.message);
+        } finally {
+            document.body.removeChild(tempContainer);
+        }
+    }
+    
+    // event listeners
+    textInput.addEventListener('input', updatePreview);
+    fileNameInput.addEventListener('input', () => {});
+    generateBtn.addEventListener('click', downloadPDF);
+    
+    // inisialisasi preview dengan contoh gambar
+    updatePreview();
 </script>
 </body>
 </html>
